@@ -1,29 +1,18 @@
 #include "VKInclude.h"
 #include "Runtime/Graphics/RenderNode.h"
+#include "Runtime/Renderer/ShadowPass.h"
+#include "Runtime/Renderer/OpaquePass.h"
+#include "Runtime/Renderer/PostProcessPass.h"
+
 
 MORISA_NAMESPACE_BEGIN
 
-class VKPipelineState;
-class VKGpuProgram;
-class VKRenderPass;
+
 struct VKSynchronizationInfo;
 class EventProcessor;
 struct EventProcessorData;
-class MMaterial;
-class VKMesh;
 class Camera;
-class VKImage;
 
-struct RenderConfig
-{
-	uint32_t useMSAA : 1;
-
-	RenderConfig():
-		useMSAA(0)
-	{
-
-	}
-};
 
 class VKRenderer
 {
@@ -36,29 +25,16 @@ public:
 	void RenderFrame();
 	void AfterRender();
 private:
-	void DrawNode(MRenderNode* node, VKRenderPass* pass);
-	void CreateRenderTarget();
-private:
-	RenderConfig config;
-
 	uint32_t _currentIndex;
 	const VKSynchronizationInfo* _syncInfo;
 
-	VKRenderPass* _renderPass;
-	VKRenderPass* _finalRenderPass;
-
-	VKImage* _colorImage;
-	VKImage* _depthImage;
-	VKImage* _colorSampleImage;
-	VKImage* _depthSampleImage;
+	ShadowPass* _shadowPass;
+	OpaquePass* _opaquePass;
+	PostProcessPass* _postProcessPass;
 
 	Camera* _camera;
 	EventProcessor* _eventProcessor;
 	EventProcessorData* _eventProcessorData;
-
-	MRenderNode* _cubeNode;
-	MRenderNode* _modelNode;
-	MRenderNode* _FullScreenNode;
 };
 
 

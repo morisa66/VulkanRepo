@@ -11,7 +11,7 @@ struct MDefaultMeshVertexData
 	glm::vec2 uv;
 };
 
-static std::vector<glm::vec3> cubePositionData =
+static MVector<glm::vec3> cubePositionData =
 {
 	{-0.5f,-0.5f,-0.5f,},  // -X side	
 	{-0.5f,-0.5f, 0.5f,},
@@ -56,7 +56,7 @@ static std::vector<glm::vec3> cubePositionData =
 	{ 0.5f, 0.5f, 0.5f,},
 };
 
-static std::vector<glm::vec2> cubeUVData =
+static MVector<glm::vec2> cubeUVData =
 {
 	{0.0f, 0.0f,},  // -X side
 	{1.0f, 0.0f,},
@@ -101,14 +101,14 @@ static std::vector<glm::vec2> cubeUVData =
 	{1.0f, 1.0f,},
 };
 
-static std::vector<glm::vec3> fullScreenPositionData =
+static MVector<glm::vec3> fullScreenPositionData =
 {
 	{-1.0f, -1.0f, 0.0f,},
 	{3.0f, -1.0f, 0.0f,},
 	{-1.0f, 3.0f, 0.0f,},
 };
 
-static std::vector<glm::vec2> fullScreenUVData =
+static MVector<glm::vec2> fullScreenUVData =
 {
 	{0.0f, 0.0f},
 	{2.0f, 0.0f},
@@ -193,7 +193,7 @@ void VKMesh::FillData(const char* path)
 	MModel* model = LoadModel(path);
 	VKBufferManager* bufferManager = Context()->BufferManager();
 	
-	const std::vector<MMesh*> mMeshs = model->Meshs();
+	const MVector<MMesh*> mMeshs = model->Meshs();
 	const uint32_t count = mMeshs.size();
 	_meshDatas.resize(count);
 
@@ -233,7 +233,7 @@ void VKMesh::FillData(MDefaultMesh defaultMesh)
 	{
 	case kMDefaultMeshCube:
 	{
-		std::vector<MDefaultMeshVertexData> cubeData(cubePositionData.size());
+		MVector<MDefaultMeshVertexData> cubeData(cubePositionData.size());
 		for (uint32_t i = 0; i < cubePositionData.size(); ++i)
 		{
 			cubeData[i].position = cubePositionData[i];
@@ -256,7 +256,7 @@ void VKMesh::FillData(MDefaultMesh defaultMesh)
 	}
 	case kMDefaultMeshFullScreen:
 	{
-		std::vector<MDefaultMeshVertexData> fullScreenData(fullScreenPositionData.size());
+		MVector<MDefaultMeshVertexData> fullScreenData(fullScreenPositionData.size());
 		for (uint32_t i = 0; i < fullScreenPositionData.size(); ++i)
 		{
 			fullScreenData[i].position = fullScreenPositionData[i];
@@ -291,6 +291,11 @@ VKMesh* VKMeshManager::CreateMeshDefault(MDefaultMesh defaultMesh)
 
 VKMesh* VKMeshManager::CreateMeshModel(const char* path)
 {
+	MUMap<std::string, VKMesh*>::const_iterator it = _cache.find(path);
+	if (it != _cache.end())
+	{
+		return it->second;
+	}
 	VKMesh* mesh = MORISA_NEW(VKMesh, path);
 	PushPersistence(mesh);
 	return mesh;

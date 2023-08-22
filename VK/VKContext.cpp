@@ -13,7 +13,7 @@
 
 #include "Runtime/Graphics/Material.h"
 
-#include <vector>
+#include "Core/MVector.h"
 #include <string>
 #include <set>
 
@@ -75,7 +75,7 @@ VKContext::VKContext():
         return;
     }
 
-    _window = MORISA_NEW(VKWindow, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+    _window = MORISA_NEW(VKWindow, globalConfig.defaultWindowWidth, globalConfig.defaultWindowHeight);
 
     SetQueueFamilies();
     if (_graphicsQueueIndex == -1)
@@ -165,26 +165,27 @@ void VKContext::CreateInstance()
 
     uint32_t layerCount = 0;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-    std::vector<VkLayerProperties> layers(layerCount);
+    MVector<VkLayerProperties> layers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, layers.data());
-    std::vector<const char*> layerNames;
+    MVector<const char*> layerNames;
 
     for (const VkLayerProperties& layer : layers)
     {
-#if ENABLE_VALIDATITON_LAYER
-        if (strcmp(VALIDATITON_LAYER_NAME, layer.layerName) == 0)
+        if (globalConfig.enableValidationLayer)
         {
-            layerNames.emplace_back(VALIDATITON_LAYER_NAME);
+            if (strcmp("VK_LAYER_KHRONOS_validation", layer.layerName) == 0)
+            {
+                layerNames.emplace_back("VK_LAYER_KHRONOS_validation");
+            }
         }
-#endif
         MORISA_LOG("InstanceLayerProperties %s\n", layer.layerName);
     }
-
+    //layerNames.emplace_back("VK_LAYER_KHRONOS_synchronization2");
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr , &extensionCount, nullptr);
-    std::vector<VkExtensionProperties> extensions(extensionCount);
+    MVector<VkExtensionProperties> extensions(extensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-    std::vector<const char*> extensionNames =
+    MVector<const char*> extensionNames =
     {
         "VK_KHR_surface",
         "VK_KHR_win32_surface",
@@ -212,7 +213,7 @@ void VKContext::PickUpGpu()
 {
     uint32_t gpuCount = 0;
     vkEnumeratePhysicalDevices(_instance, &gpuCount, nullptr);
-    std::vector<VkPhysicalDevice> gpus(gpuCount);
+    MVector<VkPhysicalDevice> gpus(gpuCount);
     vkEnumeratePhysicalDevices(_instance, &gpuCount, gpus.data());
 
     for (VkPhysicalDevice gpu : gpus)
@@ -231,7 +232,7 @@ void VKContext::SetQueueFamilies()
 {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    MVector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
     std::set<uint32_t> graphicsQueueIndices;
     std::set<uint32_t> computeQueueIndices;
@@ -289,9 +290,9 @@ void VKContext::CreateDevice()
 
     uint32_t layerCount = 0;
     vkEnumerateDeviceLayerProperties(_physicalDevice, &layerCount, nullptr);
-    std::vector<VkLayerProperties> layers(layerCount);
+    MVector<VkLayerProperties> layers(layerCount);
     vkEnumerateDeviceLayerProperties(_physicalDevice , &layerCount, layers.data());
-    std::vector<const char*> layerNames;
+    MVector<const char*> layerNames;
     for (const VkLayerProperties& layer : layers)
     {
         MORISA_LOG("DeviceLayerProperties %s\n", layer.layerName);
@@ -299,9 +300,9 @@ void VKContext::CreateDevice()
 
     uint32_t extensionCount = 0;
     vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
-    std::vector<VkExtensionProperties> extensions(extensionCount);
+    MVector<VkExtensionProperties> extensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
-    std::vector<const char*> extensionNames =
+    MVector<const char*> extensionNames =
     {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
     };
@@ -339,11 +340,11 @@ void VKContext::GetQueue()
 void VKContext::InitGlobalUniform()
 {
     _globalMaterial = MORISA_NEW(MMaterial);
-    _globalMaterial->Data(kMShaderStageVertex)->AddMat("view", glm::mat4(1.0f));
-    _globalMaterial->Data(kMShaderStageVertex)->AddMat("proj", glm::mat4(1.0f));
+    _globalMaterial->Data(kMShaderStageVertex)->AddMat("View", glm::mat4(1.0f));
+    _globalMaterial->Data(kMShaderStageVertex)->AddMat("Proj", glm::mat4(1.0f));
     // xyz position
     // w strength
-    _globalMaterial->Data(kMShaderStageFragment)->AddVec("lightPosition", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    _globalMaterial->Data(kMShaderStageFragment)->AddVec("LightPosition", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     _globalUniform = UniformManager()->CreateUniform(_globalMaterial);
 }

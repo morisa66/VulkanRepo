@@ -6,7 +6,9 @@
 #include "Utils/ModelUtils.h"
 #include "Core/GC.h"
 
-#include<vector>
+#include"Core/MVector.h"
+
+#include <string>
 
 MORISA_NAMESPACE_BEGIN
 
@@ -45,11 +47,11 @@ class VKMesh : public GCNode
 	friend class VKMeshManager;
 public:
 	virtual ~VKMesh();
-	inline const std::vector<VkVertexInputBindingDescription>& GetBindingDescriptions()
+	inline const MVector<VkVertexInputBindingDescription>& GetBindingDescriptions()
 	{
 		return _bindingDescriptions;
 	}
-	inline const std::vector<VkVertexInputAttributeDescription>& GetAttributeDescriptions()
+	inline const MVector<VkVertexInputAttributeDescription>& GetAttributeDescriptions()
 	{
 		return _attributeDescriptions;
 	}
@@ -64,9 +66,9 @@ private:
 	void FillData(MDefaultMesh defaultMesh);
 private:
 	glm::mat4 _model;
-	std::vector<VKMeshData> _meshDatas;
-	std::vector<VkVertexInputBindingDescription> _bindingDescriptions;
-	std::vector<VkVertexInputAttributeDescription> _attributeDescriptions;
+	MVector<VKMeshData> _meshDatas;
+	MVector<VkVertexInputBindingDescription> _bindingDescriptions;
+	MVector<VkVertexInputAttributeDescription> _attributeDescriptions;
 };
 
 class VKMeshManager : public GC
@@ -75,7 +77,7 @@ public:
 	VKMesh* CreateMeshDefault(MDefaultMesh defaultMesh);
 	VKMesh* CreateMeshModel(const char* path);
 private:
-
+	MUMap<std::string, VKMesh*> _cache;
 };
 
 MORISA_NAMESPACE_END

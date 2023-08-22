@@ -11,17 +11,17 @@ MORISA_NAMESPACE_BEGIN
 VKFramebuffer::VKFramebuffer(VKRenderPass* renderPass):
 	_currentIndex(0)
 {
-	const VkExtent2D& size = Context()->WindowSize();
-	const std::vector<Attachment>& attachments = renderPass->GetInfo().attachments;
+	const VkExtent2D& size = renderPass->Info().scope.extent;
+	const MVector<Attachment>& attachments = renderPass->Info().attachments;
 	const uint32_t attachmentSize = attachments.size();
 
-	std::vector<Attachment>::const_iterator swapChainPos = std::find_if(attachments.cbegin(), attachments.cend(),
+	MVector<Attachment>::const_iterator swapChainPos = std::find_if(attachments.cbegin(), attachments.cend(),
 		[](const Attachment& attachment) 
 		{
 			return attachment.renderImage == VKImage::SwapChainImage();
 		}) ;
 
-	std::vector<VkImageView> attachmentViews(attachmentSize);
+	MVector<VkImageView> attachmentViews(attachmentSize);
 	for (uint32_t i = 0; i < attachmentSize; ++i)
 	{
 		attachmentViews[i] = attachments[i].View();

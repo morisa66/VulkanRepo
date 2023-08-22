@@ -5,7 +5,7 @@
 
 #include <string>
 #include <fstream>
-#include <vector>
+#include "Core/MVector.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -17,7 +17,7 @@ class ScopeReader
 {
 public:
 	ScopeReader(const char* path, std::string& output);
-	ScopeReader(const char* path, std::vector<char>& output);
+	ScopeReader(const char* path, MVector<char>& output);
 	~ScopeReader();
 private:
 	bool OpenFileStream(const char* path, std::ios::openmode mode);

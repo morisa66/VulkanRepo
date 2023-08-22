@@ -5,15 +5,15 @@ layout(location = 0) out vec4 finalColor;
 
 layout(set = 1, binding = 2) uniform sampler2D Samplers[];
 
-const uint ColorTex = 0;
-const uint DepthTex = 1;
-const uint BaseMapTex = 2;
+const uint Color = 0;
+const uint Depth = 1;
+const uint BaseMap = 2;
 
 void main() 
 {
     vec2 inverUV = vec2(uv.x, 1.0f - uv.y);
-    vec4 color = texture(Samplers[ColorTex],  inverUV);
-    float depth =  texture(Samplers[DepthTex],  inverUV).r;
-    vec4 baseColor =  texture(Samplers[BaseMapTex],  uv);
-    finalColor = vec4(color);
+    vec4 color = texture(Samplers[Color],  inverUV);
+    float depth =  texture(Samplers[Depth],  inverUV).r;
+    vec4 baseColor =  texture(Samplers[BaseMap],  uv);
+    finalColor = color;
 }

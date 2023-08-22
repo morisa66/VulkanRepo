@@ -14,7 +14,7 @@ ScopeReader::ScopeReader(const char* path, std::string& output)
 	}
 }
 
-ScopeReader::ScopeReader(const char* path, std::vector<char>& output)
+ScopeReader::ScopeReader(const char* path, MVector<char>& output)
 {
 	if (OpenFileStream(path, std::ios::in | std::ios::binary))
 	{

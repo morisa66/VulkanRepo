@@ -72,7 +72,7 @@ void GC::PushGC(uint64_t fence, GCNode* node)
 	}
 	else
 	{
-		_GCPool.emplace(std::make_pair(fence, std::vector<GCNode*>{node}));
+		_GCPool.emplace(std::make_pair(fence, MVector<GCNode*>{node}));
 	}
 
 	node->_inGC = 1;

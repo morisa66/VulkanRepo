@@ -1,7 +1,7 @@
 #include "VKInclude.h"
 
 #include <queue>
-#include <unordered_map>
+#include "Core/MMap.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -28,6 +28,8 @@ public:
 
 	// Call each frame once
 	void Recycle();
+
+	void BeginRenderPass(VKRenderPass* renderPass);
 
 	void BeginRenderPass(
 		VKRenderPass* renderPass, 
@@ -72,6 +74,8 @@ public:
 
 	void TransitionLayout(VKImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, 
 		uint32_t baseLevel, uint32_t levelCount);
+
+	void SetDepthBias(float constant, float clamp, float slope);
 private:									 
 	VkCommandBuffer GetFreeCommandBuffer();	
 private:

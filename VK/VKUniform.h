@@ -7,7 +7,7 @@
 #include "Utils/MatrixUtils.h"
 #include "Runtime/Graphics/GfxState.h"
 
-#include <vector>
+#include "Core/MVector.h"
 
 MORISA_NAMESPACE_BEGIN
 

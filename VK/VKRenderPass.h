@@ -2,8 +2,7 @@
 #define __VK_RENDER_PASS__
 
 #include "VKInclude.h"
-#include <vector>
-#include <array>
+#include "Core/MVector.h"
 #include <initializer_list>
 
 MORISA_NAMESPACE_BEGIN
@@ -40,7 +39,7 @@ struct Attachment
 struct Subpass
 {
 	static const uint8_t INVALID_INDEX = 0xFF;
-	std::vector<uint8_t> colorIndices;
+	MVector<uint8_t> colorIndices;
 	uint8_t depthIndex;
 	uint8_t resolveIndex;
 	uint8_t depthResolveIndex;
@@ -56,8 +55,10 @@ struct Subpass
 // only support single pass
 struct VKRenderPassInfo
 {
-	std::vector<Attachment> attachments;
-	std::vector<Subpass> subpasses;
+	VkRect2D scope;
+	MVector<Attachment> attachments;
+	MVector<Subpass> subpasses;
+	MVector<VkClearValue> clearValues;
 };
 
 class VKRenderPass
@@ -65,11 +66,9 @@ class VKRenderPass
 public:
 	VKRenderPass();
 	~VKRenderPass();
-	inline VKRenderPassInfo& GetInfo() { return _info; }
+	inline VKRenderPassInfo& Info() { return _info; }
 	void Create();
 	inline const VkRenderPass RenderPass() { return _renderPass; }
-	void SetClearValue(const VkClearValue& clearColor, const VkClearValue& clearDepth);
-	const std::array<VkClearValue, 2>& ClearValues() { return _clearValues; }
 	VKFramebuffer* FrameBuffer() { return _frameBuffer; }
 	void FlushRenderImages(std::initializer_list<VKImage*> images);
 private:
@@ -78,16 +77,14 @@ private:
 private:
 	VKRenderPassInfo _info;
 	VkRenderPass _renderPass;
-	std::vector<VkAttachmentDescription2> _descriptions;
-	std::vector<VkAttachmentReference2> _colorReferences;
+	MVector<VkAttachmentDescription2> _descriptions;
+	MVector<VkAttachmentReference2> _colorReferences;
 	VkAttachmentReference2 _depthReference;
 	VkAttachmentReference2 _resolveReference;
 	VkAttachmentReference2 _depthStencilResolveReference;
 	VkSubpassDescriptionDepthStencilResolve _depthStencilResolve;
-	std::vector<VkSubpassDescription2> _subpasses;
-	std::vector<VkSubpassDependency2> _dependencies;
-	std::array<VkClearValue, 2> _clearValues;
-
+	MVector<VkSubpassDescription2> _subpasses;
+	MVector<VkSubpassDependency2> _dependencies;
 	VKFramebuffer* _frameBuffer;
 };
 

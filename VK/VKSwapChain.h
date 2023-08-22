@@ -1,7 +1,7 @@
 #ifndef __VK_SWAPCHAIN_H__
 #define __VK_SWAPCHAIN_H__
 
-#include <vector>
+#include "Core/MVector.h"
 
 #include "VKInclude.h"
 
@@ -11,8 +11,8 @@ class VKContext;
 
 struct VKSwapChainImageInfo
 {
-	std::vector<VkImage> images;
-	std::vector<VkImageView> views;
+	MVector<VkImage> images;
+	MVector<VkImageView> views;
 	VkFormat format;
 	uint32_t currentIndex;
 };

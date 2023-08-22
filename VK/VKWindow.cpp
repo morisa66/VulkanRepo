@@ -6,7 +6,7 @@
 #include "VKRenderer.h"
 #include "Runtime/EventProcessorData.h"
 
-#include <unordered_map>
+#include "Core/MMap.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -30,9 +30,12 @@ VKWindow::VKWindow( uint32_t width, uint32_t height):
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	_window = glfwCreateWindow(width, height, "GameRendering", nullptr, nullptr);
 	glfwSetWindowUserPointer(_window, this);
-#if HIDE_CURSOR
-	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-#endif
+
+	if (globalConfig.hideCursor)
+	{
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
 	glfwSetFramebufferSizeCallback(_window, FramebufferResizeCallback);
 
 	VkWin32SurfaceCreateInfoKHR win32SurfaceCreateInfoKHR{};
@@ -102,8 +105,8 @@ void VKWindow::SetEventProcessorData(EventProcessorData* eventProcessorData)
 
 void VKWindow::PrepareEventProcessorData()
 {
-	typedef std::unordered_map<int, KeyAction> ActionMap;
-	typedef std::unordered_map<int, KeyType> TypeMap;
+	typedef MUMap<int, KeyAction> ActionMap;
+	typedef MUMap<int, KeyType> TypeMap;
 
 	static const ActionMap actionMap
 	{

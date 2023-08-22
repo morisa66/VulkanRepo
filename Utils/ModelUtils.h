@@ -4,7 +4,7 @@
 #include "Core/GlobalConfig.h"
 #include "MatrixUtils.h"
 
-#include <vector>
+#include "Core/MVector.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -19,8 +19,8 @@ struct MMeshVertexData
 
 struct MMesh
 {
-	std::vector<MMeshVertexData> vertices;
-	std::vector<uint32_t> indices;
+	MVector<MMeshVertexData> vertices;
+	MVector<uint32_t> indices;
 };
 
 class MModel
@@ -28,10 +28,10 @@ class MModel
 	friend MModel* LoadModel(const char* path);
 public:
 	~MModel();
-	const std::vector<MMesh*>& Meshs() { return _meshs; }
+	const MVector<MMesh*>& Meshs() { return _meshs; }
 private:
 	MModel();
-	std::vector<MMesh*> _meshs;
+	MVector<MMesh*> _meshs;
 };
 
 MModel* LoadModel(const char* path);

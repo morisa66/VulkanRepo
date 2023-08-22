@@ -3,8 +3,8 @@
 
 #include "GlobalConfig.h"
 
-#include <unordered_map>
-#include <vector>
+#include "Core/MMap.h"
+#include "Core/MVector.h"
 
 
 MORISA_NAMESPACE_BEGIN
@@ -41,8 +41,8 @@ protected:
 	void PushGC(uint64_t fence, GCNode* node);
 
 	void PushPersistence(GCNode* node);
-	std::unordered_map<uint64_t, std::vector<GCNode*>> _GCPool;
-	typedef std::unordered_map<uint32_t, GCNode*> POOL;
+	MUMap<uint64_t, MVector<GCNode*>> _GCPool;
+	typedef MUMap<uint32_t, GCNode*> POOL;
 	// uint64_t is a fence
 	POOL _persistencePool;
 	POOL _delayPool;

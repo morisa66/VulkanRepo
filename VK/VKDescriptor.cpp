@@ -57,7 +57,7 @@ void VKDescriptorManager::Update(VKUniform* uniform)
 
 void VKDescriptorManager::CreatePool()
 {
-	std::vector<VkDescriptorPoolSize> poolSizes(2);
+	MVector<VkDescriptorPoolSize> poolSizes(2);
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = MAX_TYPE_COUNT;
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -78,7 +78,7 @@ void VKDescriptorManager::CreateLayout(MMaterial* material,
 	= { VK_SHADER_STAGE_VERTEX_BIT ,VK_SHADER_STAGE_FRAGMENT_BIT };
 
 	VkDescriptorSetLayout layout = VK_NULL_HANDLE;
-	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+	MVector<VkDescriptorSetLayoutBinding> layoutBindings;
 
 	uint32_t bindingIndex = 0;
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
@@ -139,10 +139,10 @@ void VKDescriptorManager::UpdateSets(VKUniform* uniform,
 {
 	MMaterial* material = uniform->Material();
 
-	std::vector<VkWriteDescriptorSet> writes;
+	MVector<VkWriteDescriptorSet> writes;
 	writes.reserve(kMShaderStageCount << 1);
 	VkDescriptorBufferInfo bufferInfos[kMShaderStageCount];
-	std::vector<VkDescriptorImageInfo> imageInfos[kMShaderStageCount];
+	MVector<VkDescriptorImageInfo> imageInfos[kMShaderStageCount];
 	uint32_t bindingIndex = 0;
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{
@@ -161,7 +161,7 @@ void VKDescriptorManager::UpdateSets(VKUniform* uniform,
 		if (imageSize > 0)
 		{
 			VkWriteDescriptorSet imageWrite{};
-			std::vector<VkDescriptorImageInfo>& imageInfo = imageInfos[i];
+			MVector<VkDescriptorImageInfo>& imageInfo = imageInfos[i];
 			imageInfo.resize(imageSize);
 			imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			imageWrite.pNext = nullptr;
@@ -186,10 +186,10 @@ void VKDescriptorManager::UpdateSets(VKUniform* uniform,
 			bufferInfo.range = buffer->Size();
 
 
-			std::vector<VkDescriptorImageInfo>& imageInfo = imageInfos[j];
+			MVector<VkDescriptorImageInfo>& imageInfo = imageInfos[j];
 			if(imageInfo.size() > 0)
 			{
-				const std::vector<VKImage*>& images = uniform->Material()->Data((MShaderStage)j)->AccessImage();
+				const MVector<VKImage*>& images = uniform->Material()->Data((MShaderStage)j)->AccessImage();
 
 				for (uint32_t k = 0; k < images.size(); ++k)
 				{

@@ -42,16 +42,8 @@ void VKRenderPass::Create()
 {
 	FillAttachments();
 	CreateRenderPass();
-	_clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
-	_clearValues[1].depthStencil = { 1.0f, 0 };
 
 	_frameBuffer = MORISA_NEW(VKFramebuffer, this);
-}
-
-void VKRenderPass::SetClearValue(const VkClearValue& clearColor, const VkClearValue& clearDepth)
-{
-	_clearValues[0] = clearColor;
-	_clearValues[1] = clearDepth;
 }
 
 void VKRenderPass::FlushRenderImages(std::initializer_list<VKImage*> images)

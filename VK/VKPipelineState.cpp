@@ -87,6 +87,14 @@ void VKPipelineState::ConfigureSamples(VkSampleCountFlagBits samples)
 	_multisampleState.rasterizationSamples = samples;
 }
 
+void VKPipelineState::ComfigureDepthBias(float constant, float clamp, float slope)
+{
+	_rasterizationState.depthBiasEnable = VK_TRUE;
+	_rasterizationState.depthBiasConstantFactor = constant;
+	_rasterizationState.depthBiasClamp = clamp;
+	_rasterizationState.depthBiasSlopeFactor = slope;
+}
+
 void VKPipelineState::ConfigureBaseState()
 {
 	VK_STRUCT_INIT(_inputAssemblyState, VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO);

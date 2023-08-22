@@ -78,7 +78,7 @@ static MMesh* TransformMesh(const aiScene* scene, const aiMesh* mesh)
     return mMesh;
 }
 
-static void Traversal(const aiScene* scene, aiNode* node, std::vector<MMesh*>& meshs)
+static void Traversal(const aiScene* scene, aiNode* node, MVector<MMesh*>& meshs)
 {
     for (uint32_t i = 0; i < node->mNumMeshes; ++i)
     {
@@ -92,13 +92,15 @@ static void Traversal(const aiScene* scene, aiNode* node, std::vector<MMesh*>& m
 
 MModel* LoadModel(const char* path)
 {
-    std::string realPath = RESOURCES_ROOT_PATH;
+    std::string realPath = globalConfig.resourcesRootPath;
     realPath.append(path);
     MModel* model = MORISA_NEW(MModel);
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
         realPath,
-        aiProcess_Triangulate);
+        aiProcess_JoinIdenticalVertices
+        |aiProcess_Triangulate
+        |aiProcess_GenNormals);
 
     Traversal(scene, scene->mRootNode, model->_meshs);
     

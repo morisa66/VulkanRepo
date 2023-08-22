@@ -10,6 +10,7 @@ aux_source_directory(. SOURCE_ALL)
 aux_source_directory(./Core SOURCE_ALL)
 aux_source_directory(./Runtime SOURCE_ALL)
 aux_source_directory(./Runtime/Graphics SOURCE_ALL)
+aux_source_directory(./Runtime/Renderer SOURCE_ALL)
 aux_source_directory(./Utils SOURCE_ALL)
 aux_source_directory(./VK SOURCE_ALL)
 

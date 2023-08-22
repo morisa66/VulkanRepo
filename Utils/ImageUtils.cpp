@@ -22,7 +22,7 @@ MImage::MImage(const char* path):
     {
         return;
     }
-    std::string realPath = RESOURCES_ROOT_PATH;
+    std::string realPath = globalConfig.resourcesRootPath;
     realPath.append(path);
     stbi_set_flip_vertically_on_load(true);
     stbi_uc* data = stbi_load(realPath.c_str(), &_width, &_height, &_channel, STBI_rgb_alpha);

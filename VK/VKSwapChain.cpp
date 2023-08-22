@@ -60,7 +60,7 @@ void VKSwapChain::ChooseSurfaceFormat()
 {
 	uint32_t count = 0;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &count, nullptr);
-	std::vector<VkSurfaceFormatKHR> formats(count);
+	MVector<VkSurfaceFormatKHR> formats(count);
 	vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &count, formats.data());
 	for (const VkSurfaceFormatKHR& surfaceFormat : formats)
 	{
@@ -80,7 +80,7 @@ void VKSwapChain::ChoosePresentMode()
 {
 	uint32_t presentModeCount = 0;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, _surface, &presentModeCount, nullptr);
-	std::vector<VkPresentModeKHR> presentModes(presentModeCount);
+	MVector<VkPresentModeKHR> presentModes(presentModeCount);
 	vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, _surface, &presentModeCount, presentModes.data());
 	
 	for (VkPresentModeKHR mode : presentModes)

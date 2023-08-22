@@ -24,8 +24,19 @@ if (it != INDICES.cend())\
 	VALUES[it->second] = VALUE;\
 }
 
+#define GET_VALUE(INDICES, VALUES, NAME, DEFAULT)\
+IndexIter it = INDICES.find(NAME);\
+if (it != INDICES.cend())\
+{\
+	return VALUES[it->second];\
+}\
+else\
+{\
+	return DEFAULT;\
+}
+
 template <typename T>
-uint32_t VectorSize(const std::vector<T>& v)
+uint32_t VectorSize(const MVector<T>& v)
 {
 	return sizeof(T) * v.size();
 }
@@ -92,6 +103,31 @@ void MMaterialData::SetMat(const std::string& name, glm::mat4 value)
 void MMaterialData::SetImage(const std::string& name, VKImage* value)
 {
 	SET_VALUE(_imageIndices, _images, name, value);
+}
+
+float MMaterialData::GetFloat(const std::string& name)
+{
+	GET_VALUE(_floatIndices, _floats, name, 0.0f);
+}
+
+int MMaterialData::GetInt(const std::string& name)
+{
+	GET_VALUE(_intIndices, _ints, name, 0);
+}
+
+const glm::vec4& MMaterialData::GetVec(const std::string& name)
+{
+	GET_VALUE(_vecIndices, _vecs, name, glm::vec4(0.0f));
+}
+
+const glm::mat4& MMaterialData::GetMat(const std::string& name)
+{
+	GET_VALUE(_matIndices, _mats, name, glm::mat4(0.0f));
+}
+
+VKImage* MMaterialData::GetImage(const std::string& name)
+{
+	GET_VALUE(_imageIndices, _images, name, nullptr);
 }
 
 
@@ -173,7 +209,7 @@ void* MMaterialData::AccessData()
 	return _data;
 }
 
-const std::vector<VKImage*>& MMaterialData::AccessImage()
+const MVector<VKImage*>& MMaterialData::AccessImage()
 {
 	return _images;
 }

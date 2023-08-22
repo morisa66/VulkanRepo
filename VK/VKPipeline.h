@@ -3,7 +3,7 @@
 
 #include "VKInclude.h"
 
-#include <unordered_map>
+#include "Core/MMap.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -44,7 +44,7 @@ namespace detail
 
 // TODO
 // NOT Support concurrent GET
-typedef std::unordered_map<VKPipelineKey, VkPipeline, detail::VKPipelineKeyHash, detail::VKPipelineKeyEqual> PipelineCache;
+typedef MUMapCache<VKPipelineKey, VkPipeline, detail::VKPipelineKeyHash, detail::VKPipelineKeyEqual> PipelineCache;
 typedef PipelineCache::iterator VKPipelineNode;
 
 class VKPipelineCache

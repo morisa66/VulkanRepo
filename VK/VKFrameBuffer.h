@@ -1,6 +1,6 @@
 #include "VKInclude.h"
 
-#include <vector>
+#include "Core/MVector.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -15,7 +15,7 @@ public:
 	inline void SetCurrentBufferIndex(uint32_t currentindex) { _currentIndex = currentindex; }
 	inline VkFramebuffer GetCurrentBuffer() { return _framebuffers[_currentIndex]; }
 private:
-	std::vector<VkFramebuffer> _framebuffers;
+	MVector<VkFramebuffer> _framebuffers;
 	uint32_t _currentIndex;
 };
 

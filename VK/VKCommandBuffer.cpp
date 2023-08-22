@@ -101,6 +101,14 @@ void VKCommandBuffer::Recycle()
 	}
 }
 
+void VKCommandBuffer::BeginRenderPass(VKRenderPass* renderPass)
+{
+	const VkRect2D& renderArea = renderPass->Info().scope;
+	BeginRenderPass(renderPass, renderArea);
+	VkViewport viewport{ 0.0f, 0.0f, (float)renderArea.extent.width, (float)renderArea.extent.height, 0.0f, 1.0f };
+	SetViewport(viewport, renderArea);
+}
+
 void VKCommandBuffer::BeginRenderPass(
 	VKRenderPass* renderPass, 
 	const VkRect2D& renderArea)
@@ -111,8 +119,8 @@ void VKCommandBuffer::BeginRenderPass(
 	beginInfo.renderPass = renderPass->RenderPass();
 	beginInfo.framebuffer = renderPass->FrameBuffer()->GetCurrentBuffer();
 	beginInfo.renderArea = renderArea;
-	beginInfo.clearValueCount = renderPass->ClearValues().size();
-	beginInfo.pClearValues = renderPass->ClearValues().data();
+	beginInfo.clearValueCount = renderPass->Info().clearValues.size();
+	beginInfo.pClearValues = renderPass->Info().clearValues.data();
 	vkCmdBeginRenderPass(_cmd, &beginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
@@ -294,6 +302,11 @@ void VKCommandBuffer::TransitionLayout(VKImage* image, VkImageLayout oldLayout, 
 	barrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT , baseLevel, levelCount, 0, 1};
 
 	vkCmdPipelineBarrier(_cmd, srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+}
+
+void VKCommandBuffer::SetDepthBias(float constant, float clamp, float slope)
+{
+	vkCmdSetDepthBias(_cmd, constant, clamp, slope);
 }
 
 VkCommandBuffer VKCommandBuffer::GetFreeCommandBuffer()

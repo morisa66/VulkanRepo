@@ -77,9 +77,14 @@ void Camera::Move(CameraDirection direction, float delta)
 	}
 }
 
-void Camera::MoveTo(glm::vec3& position)
+void Camera::MoveTo(const glm::vec3& position)
 {
 	_position = position;
+}
+
+void Camera::LookAt(const glm::vec3& destination)
+{
+	_forward = glm::normalize(destination - _position);
 }
 
 void Camera::Rotate(float deltaX, float deltaY)

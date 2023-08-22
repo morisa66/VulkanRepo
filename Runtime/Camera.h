@@ -26,7 +26,8 @@ public:
 	const glm::vec3& Position() { return _position; }
 	void Update();
 	void Move(CameraDirection direction, float delta);
-	void MoveTo(glm::vec3& position);
+	void MoveTo(const glm::vec3& position);
+	void LookAt(const glm::vec3& destination);
 	void Rotate(float deltaX, float deltaY);
 private:
 	void UpdateViewLH();

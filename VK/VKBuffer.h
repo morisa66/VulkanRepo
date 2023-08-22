@@ -2,7 +2,7 @@
 #include "Core/GC.h"
 #include "VKTools.h"
 
-#include <vector>
+#include "Core/MVector.h"
 #include <queue>
 #include <map>
 
@@ -62,7 +62,7 @@ private:
 		const bool persistence);
 private:
 	VkPhysicalDeviceMemoryProperties _memoryProperties;
-	std::vector<uint32_t> _indices;
+	MVector<uint32_t> _indices;
 };
 
 MORISA_NAMESPACE_END

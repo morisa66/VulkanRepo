@@ -10,11 +10,11 @@ MORISA_NAMESPACE_BEGIN
 static VKShaderType GetShaderType(const std::string& fullPath)
 {
     const int findPos = fullPath.size() - 5;
-    if (fullPath.rfind(VS_SUFFIX) == findPos)
+    if (fullPath.rfind(globalConfig.shadeSuffixVS) == findPos)
     {
         return VKShaderTypeVS;
     }
-    if (fullPath.rfind(FS_SUFFIX) == findPos)
+    if (fullPath.rfind(globalConfig.shadeSuffixFS) == findPos)
     {
         return VKShaderTypeFS;
     }
@@ -24,14 +24,14 @@ static VKShaderType GetShaderType(const std::string& fullPath)
 
 static std::string CompileShader(const char* shaderPath)
 {
-    std::string appPath = GLSL_COMPILER_PATH;
-    std::string fullPath = SHADER_ROOT_PATH;
+    std::string appPath = globalConfig.compilerPath;
+    std::string fullPath = globalConfig.shaderRootPath;
     fullPath.append(shaderPath);
 
-    std::string fullPathSpirv = SHADER_ROOT_PATH;
+    std::string fullPathSpirv = globalConfig.shaderRootPath;
     fullPathSpirv.append("/SPIRV")
         .append(fullPath.substr(fullPath.rfind('/')))
-        .append(SPIRV_SUFFIX);
+        .append(globalConfig.spirvSuffix);
     VKShaderType shaderType = GetShaderType(fullPath);
     if (shaderType == VKShaderTypeCount)
     {
@@ -105,7 +105,7 @@ void VKGpuProgram::CreateShaderModule(const char* shaderPathVS, const char* shad
 
 VkShaderModule VKGpuProgram::CreateShaderMoudle(const std::string& spirvPath)
 {
-    std::vector<char> spirv;
+    MVector<char> spirv;
     {
         ScopeReader spirvVSReader(spirvPath.c_str(), spirv);
     }

@@ -3,7 +3,7 @@
 
 #include "VKInclude.h"
 
-#include <vector>
+#include "Core/MVector.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -24,6 +24,7 @@ public:
     void ConfigureVertexInput(VKMesh* mesh);
     void ConfigureLayout(VKUniform* localUniform);
     void ConfigureSamples(VkSampleCountFlagBits samples);
+    void ComfigureDepthBias(float constant, float clamp, float slope);
 private:
     void ConfigureBaseState();
 private:
@@ -40,9 +41,9 @@ private:
     VkPipelineDynamicStateCreateInfo _dynamicState;
     VkViewport _viewport;
     VkRect2D _scissor;
-    std::vector<VkPipelineColorBlendAttachmentState> _attachmentStates;
-    const std::vector<VkDynamicState> _dynamic{ VK_DYNAMIC_STATE_VIEWPORT , VK_DYNAMIC_STATE_SCISSOR };
-    std::vector<VkVertexInputBindingDescription> bindingDescriptions;
+    MVector<VkPipelineColorBlendAttachmentState> _attachmentStates;
+    MVector<VkDynamicState> _dynamic{ VK_DYNAMIC_STATE_VIEWPORT , VK_DYNAMIC_STATE_SCISSOR };
+    MVector<VkVertexInputBindingDescription> bindingDescriptions;
 };
 
 

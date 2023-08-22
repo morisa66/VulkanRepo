@@ -3,9 +3,10 @@
 
 #include "Core/GlobalConfig.h"
 #include "Utils/MatrixUtils.h"
+#include "Core/MVector.h"
 
 #include <string>
-#include <unordered_map>
+#include "Core/MMap.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -27,15 +28,20 @@ public:
 	void SetVec(const std::string& name, glm::vec4 value);
 	void SetMat(const std::string& name, glm::mat4 value);
 	void SetImage(const std::string& name, VKImage* value);
+	float GetFloat(const std::string& name);
+	int GetInt(const std::string& name);
+	const glm::vec4& GetVec(const std::string& name);
+	const glm::mat4& GetMat(const std::string& name);
+	VKImage* GetImage(const std::string& name);
 	uint32_t DataSize();
 	uint32_t ImageSize();
 	uint32_t Hash();
 	bool Dirty();
 	void FlushData();
 	void* AccessData();
-	const std::vector<VKImage*>& AccessImage();
+	const MVector<VKImage*>& AccessImage();
 private:
-	typedef std::unordered_map<std::string, uint32_t> IndexMap;
+	typedef MUMap<std::string, uint32_t> IndexMap;
 	typedef IndexMap::const_iterator IndexIter;
 
 	void* _data;
@@ -48,11 +54,11 @@ private:
 	IndexMap _matIndices;
 	IndexMap _imageIndices;
 
-	std::vector<float> _floats;
-	std::vector<int> _ints;
-	std::vector<glm::vec4> _vecs;
-	std::vector<glm::mat4> _mats;
-	std::vector<VKImage*> _images;
+	MVector<float> _floats;
+	MVector<int> _ints;
+	MVector<glm::vec4> _vecs;
+	MVector<glm::mat4> _mats;
+	MVector<VKImage*> _images;
 };
 
 MORISA_NAMESPACE_END
