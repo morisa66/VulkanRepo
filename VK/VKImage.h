@@ -23,6 +23,7 @@ struct VKImageInfo
 	VkImageUsageFlags usage;
 	VkImageAspectFlags aspect;
 	VkSampleCountFlagBits samples;
+	VkSamplerAddressMode addressMode;
 	uint32_t mipLevels;
 	MImage* image;
 	uint32_t depthBit : 1;
@@ -33,6 +34,7 @@ struct VKImageInfo
 		, usage(0)
 		, aspect(0)
 		, samples(VK_SAMPLE_COUNT_1_BIT)
+		, addressMode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 		, mipLevels(1)
 		, image(nullptr)
 		, depthBit(0)
@@ -61,6 +63,7 @@ public:
 	}
 	//SwapChainImage is only a placeholder.
 	static VKImage* SwapChainImage() { return nullptr; }
+	static VKImage* White;
 private:
 	VKImage(const VKImageInfo* info);
 private:
@@ -76,7 +79,8 @@ class VKImageManager : public GC
 public:
 	VKImageManager();
 	VKImage* CreateImage(const VKImageInfo* info);
-	VKImage* CreateImageFromAsset(const char* path);
+	VKImage* CreateImageFormImage(MImage* mImage);
+	VKImage* CreateImageFromPath(const char* path);
 	VkSampleCountFlagBits MsaaSamples() { return _msaaSamples; }
 	bool SupportLinearBlit(VkFormat format);
 private:

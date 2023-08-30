@@ -106,13 +106,16 @@ void OpaquePass::PrepareRenderNode(VKImage* shadowMap, Camera* shadowCamera)
 	MShader* lightingShader = MORISA_NEW(MShader, "/GLSL/PhongLighting.vert", "/GLSL/PhongLighting.frag");
 
 	MRenderNode* cubeNode = GenerateNode();
+	glm::vec4 shadowParmas = glm::vec4(globalConfig.shadowMapWidth, globalConfig.shadowMapHeight, 10.0f, 1000.0f);
 
+	glm::vec3 LightPosition = Context()->GlobalMaterial()->Data(kMShaderStageFragment)->GetVec("LightPosition").xyz;
 	cubeNode->mesh = meshManager->CreateMeshDefault(kMDefaultMeshCube);
 	cubeNode->material = MORISA_NEW(MMaterial, cubeShader);
 	cubeNode->material->Data(kMShaderStageVertex)->AddMat("Model", glm::scale(
-		glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec3(0.2f, 0.2f, 0.2f)));
+			glm::translate(glm::mat4(1.0f), LightPosition),
+			glm::vec3(0.2f, 0.2f, 0.2f)));
 	cubeNode->material->Data(kMShaderStageFragment)->AddImage("MainTex",
-		Context()->ImageManager()->CreateImageFromAsset("/Pictures/Kokomi.jpg"));
+		Context()->ImageManager()->CreateImageFromPath("/Pictures/Kokomi.jpg"));
 
 	cubeNode->uniform = uniformManager->CreateUniform(cubeNode->material);
 	cubeNode->state = MORISA_NEW(VKPipelineState);
@@ -122,32 +125,36 @@ void OpaquePass::PrepareRenderNode(VKImage* shadowMap, Camera* shadowCamera)
 
 	MRenderNode* modelNode = GenerateNode();
 
-	modelNode->mesh = meshManager->CreateMeshModel("/Models/mary/Marry.obj");
+	//modelNode->mesh = meshManager->CreateMeshModel("/Models/mary/Marry.obj");
+	modelNode->mesh = meshManager->CreateMeshModel("/Models/Kelala/Kelala.pmx");
 	modelNode->material = MORISA_NEW(MMaterial, lightingShader);
 	modelNode->material->Data(kMShaderStageVertex)->AddMat("Model", 
-		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)));
+		glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.05f)));
 	modelNode->material->Data(kMShaderStageVertex)->AddMat("ShadowVP", 
 		shadowCamera->Projection() * shadowCamera->View());
-	modelNode->material->Data(kMShaderStageFragment)->AddImage("MainTex",
-		Context()->ImageManager()->CreateImageFromAsset("/Models/mary/MC003_Kozakura_Mari.png"));
+	modelNode->material->Data(kMShaderStageFragment)->AddVec("shadowParams", shadowParmas);
+	modelNode->material->Data(kMShaderStageFragment)->AddImage(MainTex, VKImage::White);
 	modelNode->material->Data(kMShaderStageFragment)->AddImage("ShadowMap", shadowMap);
 
-	modelNode->uniform = uniformManager->CreateUniform(modelNode->material);
+	modelNode->uniform = uniformManager->CreateUniform(modelNode->material, modelNode->mesh->GetImages());
 
 	modelNode->state = MORISA_NEW(VKPipelineState);
 	modelNode->state->ConfigureVertexInput(modelNode->mesh);
 	modelNode->state->ConfigureLayout(modelNode->uniform);
 
+	modelNode->info.needNodeImage = true;
+
 	MRenderNode* planeNode = GenerateNode();
 
-	planeNode->mesh = meshManager->CreateMeshModel("/Models/Box.obj");
+	planeNode->mesh = meshManager->CreateMeshDefault(kMDefaultMeshPlane);
 	planeNode->material = MORISA_NEW(MMaterial, lightingShader);
 	planeNode->material->Data(kMShaderStageVertex)->AddMat("Model", 
-		glm::scale(glm::mat4(1.0f), glm::vec3(4.0f, 0.2f, 4.0f)));
+		glm::scale(glm::mat4(1.0f), glm::vec3(4.0f, 1.0f, 4.0f)));
 	planeNode->material->Data(kMShaderStageVertex)->AddMat("ShadowVP",
 		shadowCamera->Projection() * shadowCamera->View());
-	planeNode->material->Data(kMShaderStageFragment)->AddImage("MainTex",
-		Context()->ImageManager()->CreateImageFromAsset("/Models/mary/MC003_Kozakura_Mari.png"));
+	planeNode->material->Data(kMShaderStageFragment)->AddVec("shadowParams", shadowParmas);
+	planeNode->material->Data(kMShaderStageFragment)->AddImage(MainTex,
+		Context()->ImageManager()->CreateImageFromPath("/Pictures/2.jpg"));
 	planeNode->material->Data(kMShaderStageFragment)->AddImage("ShadowMap", shadowMap);
 
 	planeNode->uniform = uniformManager->CreateUniform(planeNode->material);

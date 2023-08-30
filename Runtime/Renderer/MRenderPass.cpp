@@ -6,6 +6,8 @@
 #include "VK/VKPipeline.h"
 #include "Runtime/Graphics/Material.h"
 #include "VK/VKMesh.h"
+#include "VK/VKDescriptor.h"
+#include "VK/VKUniform.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -51,6 +53,7 @@ void MRenderPass::RenderNode(MRenderNode* node)
 {
 	VKContext* context = Context();
 	VKCommandBuffer* commandBuffer = context->CommandBuffer();
+	VKDescriptorManager* descriptorManager = context->DescriptorManager();
 
 	VKPipelineKey pipelineKey;
 	pipelineKey.program = node->material->Shader()->Program();
@@ -60,11 +63,18 @@ void MRenderPass::RenderNode(MRenderNode* node)
 
 	// TODO if Pipeline not changed, don't bind it twice
 	commandBuffer->BindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-	commandBuffer->BindDescriptorSets(node->state, node->uniform);
 
 	for (int i = 0; i < node->mesh->GetMeshCount(); ++i)
 	{
 		const VKMeshData& meshData = node->mesh->GetMeshData(i);
+		if (node->info.needNodeImage && meshData.imageIndices.size() > 0)
+		{
+			commandBuffer->BindDescriptorSet(node->state, node->uniform->DescriptorSet(meshData.imageIndices[0])->Set());
+		}
+		else
+		{
+			commandBuffer->BindDescriptorSet(node->state, node->uniform->DescriptorSet()->Set());
+		}
 		commandBuffer->BindVertexBuffer(meshData.vertexBuffer);
 		if (meshData.drawType == kMDrawTypeDraw)
 		{

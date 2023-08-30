@@ -24,8 +24,8 @@ void PostProcessPass::FlushImage(VKImage* colorImage, VKImage* depthImage)
 {
 	for (MRenderNode* node : _renderNodes)
 	{
-		node->material->SetImage("ColorImage", colorImage);
-		node->material->SetImage("DepthImage", depthImage);
+		node->material->SetImage(ColorTex, colorImage);
+		node->material->SetImage(DepthTex, depthImage);
 		Context()->DescriptorManager()->Update(node->uniform);
 	}
 }
@@ -52,12 +52,12 @@ void PostProcessPass::PrepareRenderNode(VKImage* colorImage, VKImage* depthImage
 
 	MRenderNode* fullScreenNode = GenerateNode();
 
-	fullScreenNode->mesh = meshManager->CreateMeshDefault(kMDefaultMeshFullScreen);
+ 	fullScreenNode->mesh = meshManager->CreateMeshDefault(kMDefaultMeshQuad);
 	fullScreenNode->material = MORISA_NEW(MMaterial, fullScreenShader);
-	fullScreenNode->material->Data(kMShaderStageFragment)->AddImage("ColorImage", colorImage);
-	fullScreenNode->material->Data(kMShaderStageFragment)->AddImage("DepthImage", depthImage);
+	fullScreenNode->material->Data(kMShaderStageFragment)->AddImage(ColorTex, colorImage);
+	fullScreenNode->material->Data(kMShaderStageFragment)->AddImage(DepthTex, depthImage);
 	fullScreenNode->material->Data(kMShaderStageFragment)->AddImage("BlendImage",
-		Context()->ImageManager()->CreateImageFromAsset("/Pictures/1.jpg"));
+		Context()->ImageManager()->CreateImageFromPath("/Pictures/1.jpg"));
 	fullScreenNode->uniform = uniformManager->CreateUniform(fullScreenNode->material);
 
 	fullScreenNode->state = MORISA_NEW(VKPipelineState);

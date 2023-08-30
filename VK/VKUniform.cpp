@@ -13,11 +13,18 @@ MORISA_NAMESPACE_BEGIN
 
 VKUniform::VKUniform(MMaterial* material):
 	_material(material)
-	, _descriptorSet(nullptr)
 {
 	InitBuffer();
 	CreateDescriptorSet();
 }
+
+VKUniform::VKUniform(MMaterial* material, const MMap<MString, MVector<VKImage*>>& images):
+	_material(material)
+{
+	InitBuffer();
+	CreateDescriptorSets(images);
+}
+
 
 VKUniform::~VKUniform()
 {
@@ -38,7 +45,28 @@ void VKUniform::Update()
 
 void VKUniform::CreateDescriptorSet()
 {
-	_descriptorSet = Context()->DescriptorManager()->CreateDescriptorSet(this);
+	_descriptorSets.resize(1);
+	_descriptorSets[0] = Context()->DescriptorManager()->CreateDescriptorSet(this);
+}
+
+void VKUniform::CreateDescriptorSets(const MMap<MString, MVector<VKImage*>>& images)
+{
+	MMap<MString, MVector<VKImage*>>::const_iterator it = images.find(MainTex);
+	if (it == images.cend() || it->second.size() < 2)
+	{
+		_material->SetImage(MainTex, it->second[0]);
+		CreateDescriptorSet();
+	}
+	else
+	{
+		uint32_t size = it->second.size();
+		_descriptorSets.resize(size);
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			_material->SetImage(MainTex, it->second[i]);
+			_descriptorSets[i] = Context()->DescriptorManager()->CreateDescriptorSet(this);
+		}
+	}
 }
 
 void VKUniform::InitBuffer()
@@ -67,6 +95,13 @@ VKUniformManager::VKUniformManager()
 VKUniform* VKUniformManager::CreateUniform(MMaterial* material)
 {
 	VKUniform* uniform = MORISA_NEW(VKUniform, material);
+	PushPersistence(uniform);
+	return uniform;
+}
+
+VKUniform* VKUniformManager::CreateUniform(MMaterial* material, const MMap<MString, MVector<VKImage*>>& images)
+{
+	VKUniform* uniform = MORISA_NEW(VKUniform, material, images);
 	PushPersistence(uniform);
 	return uniform;
 }

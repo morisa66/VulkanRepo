@@ -10,12 +10,23 @@ class VKMesh;
 class VKUniform;
 class VKPipelineState;
 
+struct MRenderNodeInfo
+{
+	bool needNodeImage;
+	MRenderNodeInfo():
+		needNodeImage(false)
+	{
+
+	}
+};
+
 struct MRenderNode
 {
 	MMaterial* material;
 	VKMesh* mesh;
 	VKUniform* uniform;
 	VKPipelineState* state;
+	MRenderNodeInfo info;
 
 	MRenderNode();
 	~MRenderNode();

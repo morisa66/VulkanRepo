@@ -2,8 +2,7 @@
 #define __VK_GPU_PROGRAM_H__
 
 #include "VKInclude.h"
-
-#include <string>
+#include "Core/MString.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -23,7 +22,7 @@ public:
 private:
 	void InitDefault();
 	void CreateShaderModule(const char* shaderPathVS, const char* shaderPathFS);
-	VkShaderModule CreateShaderMoudle(const std::string& spirvPath);
+	VkShaderModule CreateShaderMoudle(const MString& spirvPath);
 	void ConfigureShaderStageInfo();
 private:
 	VkShaderModule _shaderModules[VKShaderTypeCount];

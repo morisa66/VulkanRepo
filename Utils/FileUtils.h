@@ -2,10 +2,9 @@
 #define __FILE_UTILS_H__
 
 #include "Core/GlobalConfig.h"
-
-#include <string>
-#include <fstream>
+#include "Core/MString.h"
 #include "Core/MVector.h"
+#include <fstream>
 
 MORISA_NAMESPACE_BEGIN
 
@@ -16,7 +15,7 @@ MORISA_NAMESPACE_BEGIN
 class ScopeReader
 {
 public:
-	ScopeReader(const char* path, std::string& output);
+	ScopeReader(const char* path, MString& output);
 	ScopeReader(const char* path, MVector<char>& output);
 	~ScopeReader();
 private:

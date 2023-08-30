@@ -3,6 +3,13 @@
 
 MORISA_NAMESPACE_BEGIN
 
+const MString MainTex = "MainTex";
+const MString ColorTex = "ColorTex";
+const MString DepthTex = "DepthTex";
+
+static glm::vec4 sDefaultVec(0.0f);
+static glm::mat4 sDefaultMat(0.0f);
+
 #define ADD_VALUE(INDICES, VALUES, NAME, VALUE)\
 IndexIter it = INDICES.find(NAME);\
 _dirty = true;\
@@ -54,78 +61,78 @@ MMaterialData::~MMaterialData()
 {
 }
 
-void MMaterialData::AddFloat(const std::string& name, float value)
+void MMaterialData::AddFloat(const MString& name, float value)
 {
 	ADD_VALUE(_floatIndices, _floats, name, value);
 }
 
-void MMaterialData::AddInt(const std::string& name, int value)
+void MMaterialData::AddInt(const MString& name, int value)
 {
 	ADD_VALUE(_intIndices, _ints, name, value);
 }
 
-void MMaterialData::AddVec(const std::string& name, glm::vec4 value)
+void MMaterialData::AddVec(const MString& name, glm::vec4 value)
 {
 	ADD_VALUE(_vecIndices, _vecs, name, value);
 }
 
-void MMaterialData::AddMat(const std::string& name, glm::mat4 value)
+void MMaterialData::AddMat(const MString& name, glm::mat4 value)
 {
 	ADD_VALUE(_matIndices, _mats, name, value);
 }
 
-void MMaterialData::AddImage(const std::string& name, VKImage* value)
+void MMaterialData::AddImage(const MString& name, VKImage* value)
 {
 	ADD_VALUE(_imageIndices, _images, name, value);
 }
 
 
-void MMaterialData::SetFloat(const std::string& name, float value)
+void MMaterialData::SetFloat(const MString& name, float value)
 {
 	SET_VALUE(_floatIndices, _floats, name, value);
 }
 
-void MMaterialData::SetInt(const std::string& name, int value)
+void MMaterialData::SetInt(const MString& name, int value)
 {
 	SET_VALUE(_intIndices, _ints, name, value);
 }
 
-void MMaterialData::SetVec(const std::string& name, glm::vec4 value)
+void MMaterialData::SetVec(const MString& name, glm::vec4 value)
 {
 	SET_VALUE(_vecIndices, _vecs, name, value);
 }
 
-void MMaterialData::SetMat(const std::string& name, glm::mat4 value)
+void MMaterialData::SetMat(const MString& name, glm::mat4 value)
 {
 	SET_VALUE(_matIndices, _mats, name, value);
 }
 
-void MMaterialData::SetImage(const std::string& name, VKImage* value)
+void MMaterialData::SetImage(const MString& name, VKImage* value)
 {
 	SET_VALUE(_imageIndices, _images, name, value);
 }
 
-float MMaterialData::GetFloat(const std::string& name)
+float MMaterialData::GetFloat(const MString& name)
 {
 	GET_VALUE(_floatIndices, _floats, name, 0.0f);
 }
 
-int MMaterialData::GetInt(const std::string& name)
+int MMaterialData::GetInt(const MString& name)
 {
 	GET_VALUE(_intIndices, _ints, name, 0);
 }
 
-const glm::vec4& MMaterialData::GetVec(const std::string& name)
+const glm::vec4& MMaterialData::GetVec(const MString& name)
 {
-	GET_VALUE(_vecIndices, _vecs, name, glm::vec4(0.0f));
+	GET_VALUE(_vecIndices, _vecs, name, sDefaultVec);
 }
 
-const glm::mat4& MMaterialData::GetMat(const std::string& name)
+const glm::mat4& MMaterialData::GetMat(const MString& name)
 {
-	GET_VALUE(_matIndices, _mats, name, glm::mat4(0.0f));
+	GET_VALUE(_matIndices, _mats, name, sDefaultMat);
 }
 
-VKImage* MMaterialData::GetImage(const std::string& name)
+VKImage* MMaterialData::GetImage(const MString& name)
 {
 	GET_VALUE(_imageIndices, _images, name, nullptr);
 }

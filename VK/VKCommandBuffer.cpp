@@ -151,11 +151,11 @@ void VKCommandBuffer::BindIndexBuffer(VKBuffer* buffer, VkIndexType indexType)
 	vkCmdBindIndexBuffer(_cmd, buffer->Access(), 0, indexType);
 }
 
-void VKCommandBuffer::BindDescriptorSets(VKPipelineState* state, VKUniform* uniform)
+void VKCommandBuffer::BindDescriptorSet(VKPipelineState* state, VkDescriptorSet set)
 {
 	static std::array<VkDescriptorSet, 2> sets;
 	sets[0] = Context()->GlobalUniform()->DescriptorSet()->Set();
-	sets[1] = uniform->DescriptorSet()->Set();
+	sets[1] = set;
 	vkCmdBindDescriptorSets(_cmd,
 		VK_PIPELINE_BIND_POINT_GRAPHICS,
 		state->Layout(), 0,

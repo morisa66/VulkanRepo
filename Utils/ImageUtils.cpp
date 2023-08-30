@@ -2,10 +2,10 @@
 #include "LogUtils.h"
 #include "MacroUtils.h"
 #include "MathUtils.h"
+#include "Core/MString.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
-#include <string>
 #include <cmath>
 
 MORISA_NAMESPACE_BEGIN
@@ -22,7 +22,7 @@ MImage::MImage(const char* path):
     {
         return;
     }
-    std::string realPath = globalConfig.resourcesRootPath;
+    MString realPath = globalConfig.resourcesRootPath;
     realPath.append(path);
     stbi_set_flip_vertically_on_load(true);
     stbi_uc* data = stbi_load(realPath.c_str(), &_width, &_height, &_channel, STBI_rgb_alpha);

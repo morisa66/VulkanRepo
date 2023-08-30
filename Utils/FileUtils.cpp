@@ -3,7 +3,7 @@
 
 MORISA_NAMESPACE_BEGIN
 
-ScopeReader::ScopeReader(const char* path, std::string& output)
+ScopeReader::ScopeReader(const char* path, MString& output)
 {
 	if (OpenFileStream(path, std::ios::in))
 	{

@@ -5,7 +5,7 @@
 #include "Core/RefCount.h"
 #include "GfxState.h"
 
-#include <string>
+#include "Core/MString.h"
 
 MORISA_NAMESPACE_BEGIN
 
@@ -20,7 +20,7 @@ public:
 	VKGpuProgram* Program() { return _program; }
 private:
 	MBlend _blend;
-	std::string _pathNames[kMShaderStageCount];
+	MString _pathNames[kMShaderStageCount];
 	VKGpuProgram* _program;
 };
 

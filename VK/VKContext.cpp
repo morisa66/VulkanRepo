@@ -14,7 +14,7 @@
 #include "Runtime/Graphics/Material.h"
 
 #include "Core/MVector.h"
-#include <string>
+#include "Core/MString.h"
 #include <set>
 
 
@@ -96,13 +96,14 @@ VKContext::VKContext():
     SetWindowSize(_swapChain->GetExtent());
 
     _commandBuffer = MORISA_NEW(VKCommandBuffer);
+    _pipelineCache = MORISA_NEW(VKPipelineCache);
+    _synchronization = MORISA_NEW(VKSynchronization);
+
     _bufferManager = MORISA_NEW(VKBufferManager);
     _imageManager = MORISA_NEW(VKImageManager);
     _descriptorManager = MORISA_NEW(VKDescriptorManager);
     _uniformManager = MORISA_NEW(VKUniformManager);
     _meshManager = MORISA_NEW(VKMeshManager);
-    _pipelineCache = MORISA_NEW(VKPipelineCache);
-    _synchronization = MORISA_NEW(VKSynchronization);
 
     InitGlobalUniform();
 
@@ -344,7 +345,7 @@ void VKContext::InitGlobalUniform()
     _globalMaterial->Data(kMShaderStageVertex)->AddMat("Proj", glm::mat4(1.0f));
     // xyz position
     // w strength
-    _globalMaterial->Data(kMShaderStageFragment)->AddVec("LightPosition", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    _globalMaterial->Data(kMShaderStageFragment)->AddVec("LightPosition", glm::vec4(2.0f, 2.0f, 2.0f, 2.5f));
 
     _globalUniform = UniformManager()->CreateUniform(_globalMaterial);
 }

@@ -8,7 +8,7 @@ struct _Dummy
 		_globalConfig.defaultWindowWidth = 1200;
 		_globalConfig.defaultWindowHeight = 720;
 		_globalConfig.enableValidationLayer = true;
-		_globalConfig.hideCursor = true;
+		_globalConfig.hideCursor = false;
 
 		_globalConfig.resourcesRootPath = "../Resources";
 		_globalConfig.shaderRootPath = "../Shader";

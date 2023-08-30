@@ -19,11 +19,11 @@ public:
 	MShader* Shader() { return _shader; }
 	MMaterialData* Data(MShaderStage stage) { return _datas[stage]; }
 
-	void SetFloat(const std::string& name, float value);
-	void SetInt(const std::string& name, int value);
-	void SetVec(const std::string& name, glm::vec4 value);
-	void SetMat(const std::string& name, glm::mat4 value);
-	void SetImage(const std::string& name, VKImage* value);
+	void SetFloat(const MString& name, float value);
+	void SetInt(const MString& name, int value);
+	void SetVec(const MString& name, glm::vec4 value);
+	void SetMat(const MString& name, glm::mat4 value);
+	void SetImage(const MString& name, VKImage* value);
 private:
 	MShader* _shader;
 	MMaterialData* _datas[kMShaderStageCount];

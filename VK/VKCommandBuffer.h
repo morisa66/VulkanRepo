@@ -49,7 +49,7 @@ public:
 
 	void BindIndexBuffer(VKBuffer* buffer, VkIndexType indexType);
 	
-	void BindDescriptorSets(VKPipelineState* state, VKUniform* uniform);
+	void BindDescriptorSet(VKPipelineState* state, VkDescriptorSet set);
 
 	void Draw(
 		uint32_t vertexCount,

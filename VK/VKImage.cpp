@@ -7,6 +7,7 @@
 #include <array>
 
 MORISA_NAMESPACE_BEGIN
+VKImage* VKImage::White = nullptr;
 
 VKImage::VKImage(const VKImageInfo* info):
 	_info(info)
@@ -84,6 +85,8 @@ VKImageManager::VKImageManager():
 			break;
 		}
 	}
+
+	VKImage::White = CreateImageFromPath("/Pictures/Default/White.png");
 }
 
 VkImageView VKImageManager::CreateImageView(VKImage* image)
@@ -113,9 +116,9 @@ VkSampler VKImageManager::CreateSampler(VKImage* image)
 	VK_STRUCT_CREATE(VkSamplerCreateInfo, createInfo, VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO);
 	createInfo.magFilter = VK_FILTER_LINEAR;
 	createInfo.minFilter = VK_FILTER_LINEAR;
-	createInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	createInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	createInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	createInfo.addressModeU = image->Info().addressMode;
+	createInfo.addressModeV = image->Info().addressMode;
+	createInfo.addressModeW = image->Info().addressMode;
 	createInfo.mipLodBias = 0;
 	createInfo.anisotropyEnable = VK_TRUE;
 	createInfo.maxAnisotropy = min(1.0f, _maxSamplerAnisotropy);
@@ -156,7 +159,7 @@ VKImage* VKImageManager::CreateImage(const VKImageInfo* info)
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, false, info->image->Access());
 
 		// memory copy to buffer, free the read memory, maybe reuse
-		// mImage->FreeImageReadMemory();
+		//info->image->FreeImageReadMemory();
 		VKCommandBuffer* commandBuffer = context->CommandBuffer();
 		commandBuffer->Begin();
 		commandBuffer->TransitionLayout(image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -186,10 +189,14 @@ VKImage* VKImageManager::CreateImage(const VKImageInfo* info)
 	return image;
 }
 
-VKImage* VKImageManager::CreateImageFromAsset(const char* path)
+VKImage* VKImageManager::CreateImageFormImage(MImage* mImage)
 {
+	if (mImage == nullptr)
+	{
+		return nullptr;
+	}
+
 	VKImageInfo imageInfo;
-	MImage* mImage = MORISA_NEW(MImage, path);
 	imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
 	imageInfo.width = mImage->Width();
 	imageInfo.height = mImage->Height();
@@ -197,9 +204,15 @@ VKImage* VKImageManager::CreateImageFromAsset(const char* path)
 	imageInfo.aspect = VK_IMAGE_ASPECT_COLOR_BIT;
 	imageInfo.image = mImage;
 	imageInfo.mipLevels = mImage->MipLevels();
+	imageInfo.addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 	VKImage* image = CreateImage(&imageInfo);
 	return image;
+}
+
+VKImage* VKImageManager::CreateImageFromPath(const char* path)
+{
+	return CreateImageFormImage(MORISA_NEW(MImage, path));
 }
 
 void VKImageManager::CreateMips(VKCommandBuffer* commandBuffer, VKImage* image)

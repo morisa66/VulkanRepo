@@ -6,18 +6,21 @@
 #include "Utils/ModelUtils.h"
 #include "Core/GC.h"
 
-#include"Core/MVector.h"
-
-#include <string>
+#include "Core/MMap.h"
+#include "Core/MVector.h"
+#include "Core/MString.h"
 
 MORISA_NAMESPACE_BEGIN
 
 class VKBuffer;
+class VKImage;
 
 enum MDefaultMesh
 {
+	kMDefaultMeshPlane,
+	kMDefaultMeshQuad,
 	kMDefaultMeshCube,
-	kMDefaultMeshFullScreen,
+	kMDefaultMeshCount,
 };
 
 enum MDrawType
@@ -38,6 +41,7 @@ struct VKMeshData
 	VkDeviceSize indexSize;
 	VKBuffer* vertexBuffer;
 	VKBuffer* indexBuffer;
+	MVector<uint32_t> imageIndices;
 };
 
 class VKMeshManager;
@@ -57,16 +61,16 @@ public:
 	}
 	inline const uint32_t GetMeshCount() { return _meshDatas.size(); }
 	inline const VKMeshData& GetMeshData(uint32_t index) { return _meshDatas[index]; }
+	const MMap<MString, MVector<VKImage*>>& GetImages() { return _images; }
 private:
+	VKMesh(MMesh* mMesh);
 	VKMesh(const char* path);
-	VKMesh(MDefaultMesh defaultMesh);
-	void SetDescriptionModel();
-	void SetDescriptionDefault();
+	void SetDescription();
+	void FillMeshData(VKMeshData& meshData, MMesh* mMesh);
 	void FillData(const char* path);
-	void FillData(MDefaultMesh defaultMesh);
 private:
-	glm::mat4 _model;
 	MVector<VKMeshData> _meshDatas;
+ 	MMap<MString, MVector<VKImage*>> _images;
 	MVector<VkVertexInputBindingDescription> _bindingDescriptions;
 	MVector<VkVertexInputAttributeDescription> _attributeDescriptions;
 };
@@ -74,10 +78,14 @@ private:
 class VKMeshManager : public GC
 {
 public:
+	VKMeshManager();
 	VKMesh* CreateMeshDefault(MDefaultMesh defaultMesh);
 	VKMesh* CreateMeshModel(const char* path);
 private:
-	MUMap<std::string, VKMesh*> _cache;
+	VKMesh* GenerateMeshDefault(MMesh* mMesh);
+private:
+	MUMap<MDefaultMesh, VKMesh*> _cacheDefaultMeshs;
+	MUMap<MString, VKMesh*> _cacheModelMeshs;
 };
 
 MORISA_NAMESPACE_END

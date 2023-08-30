@@ -7,7 +7,7 @@
 MORISA_NAMESPACE_BEGIN
 
 
-static VKShaderType GetShaderType(const std::string& fullPath)
+static VKShaderType GetShaderType(const MString& fullPath)
 {
     const int findPos = fullPath.size() - 5;
     if (fullPath.rfind(globalConfig.shadeSuffixVS) == findPos)
@@ -22,13 +22,13 @@ static VKShaderType GetShaderType(const std::string& fullPath)
 }
 
 
-static std::string CompileShader(const char* shaderPath)
+static MString CompileShader(const char* shaderPath)
 {
-    std::string appPath = globalConfig.compilerPath;
-    std::string fullPath = globalConfig.shaderRootPath;
+    MString appPath = globalConfig.compilerPath;
+    MString fullPath = globalConfig.shaderRootPath;
     fullPath.append(shaderPath);
 
-    std::string fullPathSpirv = globalConfig.shaderRootPath;
+    MString fullPathSpirv = globalConfig.shaderRootPath;
     fullPathSpirv.append("/SPIRV")
         .append(fullPath.substr(fullPath.rfind('/')))
         .append(globalConfig.spirvSuffix);
@@ -40,7 +40,7 @@ static std::string CompileShader(const char* shaderPath)
     }
 
     // Need space
-	std::string cmd = " ";
+	MString cmd = " ";
 
     cmd.append(fullPath);
     cmd.append(" -o ");
@@ -97,13 +97,13 @@ void VKGpuProgram::InitDefault()
 
 void VKGpuProgram::CreateShaderModule(const char* shaderPathVS, const char* shaderPathFS)
 {
-    std::string spirvVSPath = CompileShader(shaderPathVS);
-    std::string spirvFSPath = CompileShader(shaderPathFS);
+    MString spirvVSPath = CompileShader(shaderPathVS);
+    MString spirvFSPath = CompileShader(shaderPathFS);
     _shaderModules[VKShaderTypeVS] = CreateShaderMoudle(spirvVSPath);
     _shaderModules[VKShaderTypeFS] = CreateShaderMoudle(spirvFSPath);
 }
 
-VkShaderModule VKGpuProgram::CreateShaderMoudle(const std::string& spirvPath)
+VkShaderModule VKGpuProgram::CreateShaderMoudle(const MString& spirvPath)
 {
     MVector<char> spirv;
     {

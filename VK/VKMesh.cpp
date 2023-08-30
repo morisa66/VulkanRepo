@@ -1,137 +1,39 @@
 #include "VKMesh.h"
 #include "VKBuffer.h"
 #include "VKContext.h"
+#include "VKImage.h"
+#include "Runtime/Graphics/MaterialData.h"
 
 MORISA_NAMESPACE_BEGIN
 
-struct MDefaultMeshVertexData
+VKMesh::VKMesh(MMesh* mMesh)
 {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 uv;
-};
-
-static MVector<glm::vec3> cubePositionData =
-{
-	{-0.5f,-0.5f,-0.5f,},  // -X side	
-	{-0.5f,-0.5f, 0.5f,},
-	{-0.5f, 0.5f, 0.5f,},
-	{-0.5f, 0.5f, 0.5f,},
-	{-0.5f, 0.5f,-0.5f,},
-	{-0.5f,-0.5f,-0.5f,},
-
-	{-0.5f,-0.5f,-0.5f,},  // -Z side
-	{ 0.5f, 0.5f,-0.5f,},
-	{ 0.5f,-0.5f,-0.5f,},
-	{-0.5f,-0.5f,-0.5f,},
-	{-0.5f, 0.5f,-0.5f,},
-	{ 0.5f, 0.5f,-0.5f,},
-
-	{-0.5f,-0.5f,-0.5f,},  // -Y side
-	{ 0.5f,-0.5f,-0.5f,},
-	{ 0.5f,-0.5f, 0.5f,},
-	{-0.5f,-0.5f,-0.5f,},
-	{ 0.5f,-0.5f, 0.5f,},
-	{-0.5f,-0.5f, 0.5f,},
-
-	{-0.5f, 0.5f,-0.5f,},  // +Y side
-	{-0.5f, 0.5f, 0.5f,},
-	{ 0.5f, 0.5f, 0.5f,},
-	{-0.5f, 0.5f,-0.5f,},
-	{ 0.5f, 0.5f, 0.5f,},
-	{ 0.5f, 0.5f,-0.5f,},
-
-	{ 0.5f, 0.5f,-0.5f,},  // +X side
-	{ 0.5f, 0.5f, 0.5f,},
-	{ 0.5f,-0.5f, 0.5f,},
-	{ 0.5f,-0.5f, 0.5f,},
-	{ 0.5f,-0.5f,-0.5f,},
-	{ 0.5f, 0.5f,-0.5f,},
-
-	{-0.5f, 0.5f, 0.5f,},  // +Z side
-	{-0.5f,-0.5f, 0.5f,},
-	{ 0.5f, 0.5f, 0.5f,},
-	{-0.5f,-0.5f, 0.5f,},
-	{ 0.5f,-0.5f, 0.5f,},
-	{ 0.5f, 0.5f, 0.5f,},
-};
-
-static MVector<glm::vec2> cubeUVData =
-{
-	{0.0f, 0.0f,},  // -X side
-	{1.0f, 0.0f,},
-	{1.0f, 1.0f,},
-	{1.0f, 1.0f,},
-	{0.0f, 1.0f,},
-	{0.0f, 0.0f,},
-
-	{1.0f, 0.0f,},  // -Z side
-	{0.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 0.0f,},
-	{1.0f, 1.0f,},
-	{0.0f, 1.0f,},
-
-	{1.0f, 1.0f,},  // -Y side
-	{1.0f, 0.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{0.0f, 1.0f,},
-
-	{1.0f, 1.0f,},  // +Y side
-	{0.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 0.0f,},
-
-	{1.0f, 1.0f,},  // +X side
-	{0.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 0.0f,},
-	{1.0f, 1.0f,},
-
-	{0.0f, 1.0f,},  // +Z side
-	{0.0f, 0.0f,},
-	{1.0f, 1.0f,},
-	{0.0f, 0.0f,},
-	{1.0f, 0.0f,},
-	{1.0f, 1.0f,},
-};
-
-static MVector<glm::vec3> fullScreenPositionData =
-{
-	{-1.0f, -1.0f, 0.0f,},
-	{3.0f, -1.0f, 0.0f,},
-	{-1.0f, 3.0f, 0.0f,},
-};
-
-static MVector<glm::vec2> fullScreenUVData =
-{
-	{0.0f, 0.0f},
-	{2.0f, 0.0f},
-	{0.0f, 2.0f},
-};
+	_meshDatas.resize(1);
+	FillMeshData(_meshDatas[0], mMesh);
+	SetDescription();
+}
 
 VKMesh::VKMesh(const char* path)
 {
 	FillData(path);
-	SetDescriptionModel();
-}
-
-VKMesh::VKMesh(MDefaultMesh defaultMesh)
-{
-	FillData(defaultMesh);
-	SetDescriptionDefault();
+	SetDescription();
 }
 
 VKMesh::~VKMesh()
 {
+	VKImageManager* imageManager = Context()->ImageManager();
+	
+	// Model images only for unique usage.
+	for (MMap<MString, MVector<VKImage*>>::iterator it = _images.begin(); it != _images.end(); ++it)
+	{
+		for (VKImage* image : it->second)
+		{
+			imageManager->PushDelayDestroy(image);
+		}
+	}
 }
 
-void VKMesh::SetDescriptionModel()
+void VKMesh::SetDescription()
 {
 	_bindingDescriptions.resize(1);
 
@@ -162,141 +64,96 @@ void VKMesh::SetDescriptionModel()
 	_attributeDescriptions[3].offset = offsetof(MMeshVertexData, uv);
 }
 
-void VKMesh::SetDescriptionDefault()
+void VKMesh::FillMeshData(VKMeshData& meshData, MMesh* mMesh)
 {
-	_bindingDescriptions.resize(1);
+	VKBufferManager* manager = Context()->BufferManager();
 
-	_bindingDescriptions[0].binding = 0;
-	_bindingDescriptions[0].stride = sizeof(MDefaultMeshVertexData);
-	_bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	meshData.drawType = kMDrawTypeDrawIndex;
+	meshData.vertexData = mMesh->vertices.data();
+	meshData.vertexCount = mMesh->vertices.size();
+	meshData.vertexSize = ((VkDeviceSize)mMesh->vertices.size()) * sizeof(MMeshVertexData);
 
-	_attributeDescriptions.resize(3);
+	meshData.indexData = mMesh->indices.data();
+	meshData.indexCount = mMesh->indices.size();
+	meshData.indexSize = ((VkDeviceSize)mMesh->indices.size()) * sizeof(uint32_t);
 
-	_attributeDescriptions[0].binding = 0;
-	_attributeDescriptions[0].location = 0;
-	_attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	_attributeDescriptions[0].offset = offsetof(MDefaultMeshVertexData, position);
+	meshData.vertexBuffer = manager->CreatePersistenceBuffer(
+		meshData.vertexSize,
+		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		true,
+		meshData.vertexData);
 
-	_attributeDescriptions[1].binding = 0;
-	_attributeDescriptions[1].location = 1;
-	_attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	_attributeDescriptions[1].offset = offsetof(MDefaultMeshVertexData, normal);
+	meshData.indexBuffer = manager->CreatePersistenceBuffer(
+		meshData.indexSize,
+		VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+		true,
+		meshData.indexData);
 
-	_attributeDescriptions[2].binding = 0;
-	_attributeDescriptions[2].location = 2;
-	_attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-	_attributeDescriptions[2].offset = offsetof(MDefaultMeshVertexData, uv);
+	if (mMesh->imageIndices.size() > 0)
+	{
+		meshData.imageIndices = std::move(mMesh->imageIndices);
+	}
 }
 
 void VKMesh::FillData(const char* path)
 {
 	MModel* model = LoadModel(path);
 	VKBufferManager* bufferManager = Context()->BufferManager();
+	VKImageManager* imageManager = Context()->ImageManager();
 	
-	const MVector<MMesh*> mMeshs = model->Meshs();
-	const uint32_t count = mMeshs.size();
-	_meshDatas.resize(count);
+	const MVector<MMesh*>& mMeshs = model->Meshs();
+	const MVector<MImageData>& mImageDatas = model->ImageDatas();
+	const uint32_t meshCount = mMeshs.size();
+	const uint32_t imageCount = mImageDatas.size();
+	_meshDatas.resize(meshCount);
+	MVector<VKImage*> mainTexs(imageCount);
 
-	for (uint32_t i = 0; i < count; ++i)
+	for (uint32_t i = 0; i < meshCount; ++i)
 	{
-		_meshDatas[i].drawType = kMDrawTypeDrawIndex;
-		_meshDatas[i].vertexData = mMeshs[i]->vertices.data();
-		_meshDatas[i].vertexCount = mMeshs[i]->vertices.size();
-		_meshDatas[i].vertexSize = ((VkDeviceSize)mMeshs[i]->vertices.size()) * sizeof(MMeshVertexData);
-
-		_meshDatas[i].indexData = mMeshs[i]->indices.data();
-		_meshDatas[i].indexCount = mMeshs[i]->indices.size();
-		_meshDatas[i].indexSize = ((VkDeviceSize)mMeshs[i]->indices.size()) * sizeof(uint32_t);
-
-		_meshDatas[i].vertexBuffer = bufferManager->CreatePersistenceBuffer(
-			_meshDatas[i].vertexSize,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			true,
-			_meshDatas[i].vertexData);
-
-		_meshDatas[i].indexBuffer = bufferManager->CreatePersistenceBuffer(
-			_meshDatas[i].indexSize,
-			VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-			true,
-			_meshDatas[i].indexData);
+		FillMeshData(_meshDatas[i], mMeshs[i]);
 	}
+
+	for (uint32_t i = 0; i < imageCount; ++i)
+	{
+		mainTexs[i] = imageManager->CreateImageFormImage(mImageDatas[i].image);
+	}
+
+	_images.emplace(std::make_pair(MainTex, mainTexs));
 
 	MORISA_DELETE(model);
 }
 
-void VKMesh::FillData(MDefaultMesh defaultMesh)
+VKMeshManager::VKMeshManager()
 {
-	VKBufferManager* bufferManager = Context()->BufferManager();
-	_meshDatas.resize(1);
+	_cacheDefaultMeshs.emplace(std::make_pair(kMDefaultMeshPlane, GenerateMeshDefault(&mPlaneMesh)));
+	_cacheDefaultMeshs.emplace(std::make_pair(kMDefaultMeshQuad, GenerateMeshDefault(&mQuadMesh)));
+	_cacheDefaultMeshs.emplace(std::make_pair(kMDefaultMeshCube, GenerateMeshDefault(&mCubeMesh)));
 
-	switch (defaultMesh)
-	{
-	case kMDefaultMeshCube:
-	{
-		MVector<MDefaultMeshVertexData> cubeData(cubePositionData.size());
-		for (uint32_t i = 0; i < cubePositionData.size(); ++i)
-		{
-			cubeData[i].position = cubePositionData[i];
-			// Not normal !
-			cubeData[i].normal = glm::vec3(0.0f);
-			cubeData[i].uv = cubeUVData[i];
-		}
-
-		_meshDatas[0].drawType = kMDrawTypeDraw;
-		_meshDatas[0].vertexData = cubeData.data();
-		_meshDatas[0].vertexCount = cubeData.size();
-		_meshDatas[0].vertexSize = ((VkDeviceSize)cubeData.size()) * sizeof(MDefaultMeshVertexData);
-
-		_meshDatas[0].vertexBuffer = bufferManager->CreatePersistenceBuffer(
-			_meshDatas[0].vertexSize,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			true,
-			_meshDatas[0].vertexData);
-		break;
-	}
-	case kMDefaultMeshFullScreen:
-	{
-		MVector<MDefaultMeshVertexData> fullScreenData(fullScreenPositionData.size());
-		for (uint32_t i = 0; i < fullScreenPositionData.size(); ++i)
-		{
-			fullScreenData[i].position = fullScreenPositionData[i];
-			// Not normal !
-			fullScreenData[i].normal = glm::vec3(0.0f);
-			fullScreenData[i].uv = fullScreenUVData[i];
-		}
-
-		_meshDatas[0].drawType = kMDrawTypeDraw;
-		_meshDatas[0].vertexData = fullScreenData.data();
-		_meshDatas[0].vertexCount = fullScreenData.size();
-		_meshDatas[0].vertexSize = ((VkDeviceSize)fullScreenData.size()) * sizeof(MDefaultMeshVertexData);
-
-		_meshDatas[0].vertexBuffer = bufferManager->CreatePersistenceBuffer(
-			_meshDatas[0].vertexSize,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			true,
-			_meshDatas[0].vertexData);
-		break;
-	}
-	default:
-		break;
-	}
+	assert(_cacheDefaultMeshs.size() == kMDefaultMeshCount);
 }
 
 VKMesh* VKMeshManager::CreateMeshDefault(MDefaultMesh defaultMesh)
 {
-	VKMesh* mesh = MORISA_NEW(VKMesh, defaultMesh);
-	PushPersistence(mesh);
-	return mesh;
+	MUMap<MDefaultMesh, VKMesh*>::iterator it = _cacheDefaultMeshs.find(defaultMesh);
+	return it->second;
 }
 
 VKMesh* VKMeshManager::CreateMeshModel(const char* path)
 {
-	MUMap<std::string, VKMesh*>::const_iterator it = _cache.find(path);
-	if (it != _cache.end())
+	MUMap<MString, VKMesh*>::iterator it = _cacheModelMeshs.find(path);
+	if (it != _cacheModelMeshs.cend())
 	{
 		return it->second;
 	}
 	VKMesh* mesh = MORISA_NEW(VKMesh, path);
+	PushPersistence(mesh);
+	_cacheModelMeshs.emplace(std::make_pair(path, mesh));
+	return mesh;
+}
+
+VKMesh* VKMeshManager::GenerateMeshDefault(MMesh* mMesh)
+{
+	VKMesh* mesh = MORISA_NEW(VKMesh, mMesh);
 	PushPersistence(mesh);
 	return mesh;
 }

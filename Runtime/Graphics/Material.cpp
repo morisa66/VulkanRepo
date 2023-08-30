@@ -43,7 +43,7 @@ void MMaterial::FlushData()
 	}
 }
 
-void MMaterial::SetFloat(const std::string& name, float value)
+void MMaterial::SetFloat(const MString& name, float value)
 {
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{
@@ -51,7 +51,7 @@ void MMaterial::SetFloat(const std::string& name, float value)
 	}
 }
 
-void MMaterial::SetInt(const std::string& name, int value)
+void MMaterial::SetInt(const MString& name, int value)
 {
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{
@@ -59,7 +59,7 @@ void MMaterial::SetInt(const std::string& name, int value)
 	}
 }
 
-void MMaterial::SetVec(const std::string& name, glm::vec4 value)
+void MMaterial::SetVec(const MString& name, glm::vec4 value)
 {
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{
@@ -67,7 +67,7 @@ void MMaterial::SetVec(const std::string& name, glm::vec4 value)
 	}
 }
 
-void MMaterial::SetMat(const std::string& name, glm::mat4 value)
+void MMaterial::SetMat(const MString& name, glm::mat4 value)
 {
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{
@@ -75,7 +75,7 @@ void MMaterial::SetMat(const std::string& name, glm::mat4 value)
 	}
 }
 
-void MMaterial::SetImage(const std::string& name, VKImage* value)
+void MMaterial::SetImage(const MString& name, VKImage* value)
 {
 	for (uint32_t i = 0; i < kMShaderStageCount; ++i)
 	{

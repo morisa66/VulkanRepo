@@ -8,8 +8,8 @@
 
 MORISA_NAMESPACE_BEGIN
 
-#define MAX_TYPE_COUNT 16
-#define MAX_SET_COUNT 16
+#define MAX_TYPE_COUNT 256
+#define MAX_SET_COUNT 256
 
 VKDescriptorSet::VKDescriptorSet()
 {

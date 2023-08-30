@@ -137,7 +137,7 @@ void VKPipelineState::ConfigureBaseState()
 	VK_STRUCT_INIT(_depthStencilState, VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO);
 	_depthStencilState.depthTestEnable = VK_TRUE;
 	_depthStencilState.depthWriteEnable = VK_TRUE;
-	_depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS;
+	_depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 	_depthStencilState.depthBoundsTestEnable = VK_FALSE;
 	_depthStencilState.stencilTestEnable = VK_FALSE;
 	_depthStencilState.front = {};

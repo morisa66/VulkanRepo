@@ -7,30 +7,47 @@ layout(location = 4) in vec4 shadowPositionCS;
 
 layout(location = 0) out vec4 finalColor;
 
-layout(set = 0, binding = 1) uniform _FGlobal
-{
-    vec4 lightPosition;
-} FGlobal;
+#include "Core/GlobalFInput.glsl"
+#include "Shadow/ShadowCommon.glsl"
 
+layout(set = 1, binding = 1) uniform _FLocal
+{
+    vec4 shadowParams;
+} FLocal;
 
 layout(set = 1, binding = 2) uniform sampler2D Samplers[];
 
 const uint MainTex = 0;
 const uint ShadowMap = 1;
 
-const float ambient = 0.1f;
-
 void main() 
 {
     vec4 mainColor = texture(Samplers[MainTex], uv);
     vec4 color =  mainColor * vec4(colorFS, 1.0f);
-    vec3 L = normalize(FGlobal.lightPosition.xyz - positionWS); 
+    vec3 L = FGlobal.lightPosition.xyz - positionWS;
+    float attenuation = 1.0f / (1.0f + dot(L, L));
+    L = normalize(L); 
     vec3 N = normalize(normal);
-    float diffuse = max(ambient, dot(N, L)) * FGlobal.lightPosition.w;
+	float NoL = dot(N, L);
+    float diffuse = max(ambient, NoL) * FGlobal.lightPosition.w * attenuation;
 
 	vec4 divShadowPositionCS = shadowPositionCS / shadowPositionCS.w;
 	vec2 shadowUV = divShadowPositionCS.xy * 0.5f + 0.5f;
+	shadowUV.y = 1.0f - shadowUV.y;
 	float shadowZ = divShadowPositionCS.z;
-	float shadow = texture(Samplers[ShadowMap], shadowUV).r > shadowZ ? 1.0f : ambient;
-	finalColor = color * diffuse * shadow;
+	vec2 shadowMapSize = FLocal.shadowParams.xy;
+	float averageDepthFilterSize = FLocal.shadowParams.z;
+	float lightScale = FLocal.shadowParams.w;
+
+    PoissonDiskSampleInit(shadowUV);
+
+	float blockAverageDepth = BlockAverageDepth(Samplers[ShadowMap], shadowMapSize, shadowUV, shadowZ, averageDepthFilterSize);
+
+	float shadow = 1.0f;
+	if(blockAverageDepth < shadowZ)
+	{
+		float penumbraScale = (shadowZ - blockAverageDepth) * lightScale / blockAverageDepth;
+		shadow = PCF(Samplers[ShadowMap], shadowMapSize, shadowUV, shadowZ, NoL, penumbraScale);
+	}
+	finalColor = mainColor * diffuse * shadow;
 }

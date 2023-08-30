@@ -4,11 +4,14 @@
 #include "Core/GlobalConfig.h"
 #include "Utils/MatrixUtils.h"
 #include "Core/MVector.h"
-
-#include <string>
 #include "Core/MMap.h"
+#include "Core/MString.h"
 
 MORISA_NAMESPACE_BEGIN
+
+extern const MString MainTex;
+extern const MString ColorTex;
+extern const MString DepthTex;
 
 class VKImage;
 class MMaterialData
@@ -18,21 +21,21 @@ public:
 	MMaterialData();
 
 	~MMaterialData();
-	void AddFloat(const std::string& name, float value);
-	void AddInt(const std::string& name, int value);
-	void AddVec(const std::string& name, glm::vec4 value);
-	void AddMat(const std::string& name, glm::mat4 value);
-	void AddImage(const std::string& name, VKImage* value);
-	void SetFloat(const std::string& name, float value);
-	void SetInt(const std::string& name, int value);
-	void SetVec(const std::string& name, glm::vec4 value);
-	void SetMat(const std::string& name, glm::mat4 value);
-	void SetImage(const std::string& name, VKImage* value);
-	float GetFloat(const std::string& name);
-	int GetInt(const std::string& name);
-	const glm::vec4& GetVec(const std::string& name);
-	const glm::mat4& GetMat(const std::string& name);
-	VKImage* GetImage(const std::string& name);
+	void AddFloat(const MString& name, float value);
+	void AddInt(const MString& name, int value);
+	void AddVec(const MString& name, glm::vec4 value);
+	void AddMat(const MString& name, glm::mat4 value);
+	void AddImage(const MString& name, VKImage* value);
+	void SetFloat(const MString& name, float value);
+	void SetInt(const MString& name, int value);
+	void SetVec(const MString& name, glm::vec4 value);
+	void SetMat(const MString& name, glm::mat4 value);
+	void SetImage(const MString& name, VKImage* value);
+	float GetFloat(const MString& name);
+	int GetInt(const MString& name);
+	const glm::vec4& GetVec(const MString& name);
+	const glm::mat4& GetMat(const MString& name);
+	VKImage* GetImage(const MString& name);
 	uint32_t DataSize();
 	uint32_t ImageSize();
 	uint32_t Hash();
@@ -41,7 +44,7 @@ public:
 	void* AccessData();
 	const MVector<VKImage*>& AccessImage();
 private:
-	typedef MUMap<std::string, uint32_t> IndexMap;
+	typedef MUMap<MString, uint32_t> IndexMap;
 	typedef IndexMap::const_iterator IndexIter;
 
 	void* _data;
